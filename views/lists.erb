@@ -1,9 +1,7 @@
 <ul id="lists">
   <% @lists.each_with_index do |list, ind| %>
-    <li>
-      <a>
-        <h2><a href="/lists/<%= ind %>"><%= list[:name] %></a></a></h2><p><%= list[:todos].size %></p>
-      </a>
+    <li class=<%="complete" if all_complete?(list) && list[:todos].size > 0%>>
+      <h2><a href="/lists/<%= ind %>"><%= list[:name] %></a></a></h2><p><%= list[:todos].count {|todo| todo[:completed] } %>/<%= list[:todos].size %></p>
     </li>
   <% end %>
 </ul>

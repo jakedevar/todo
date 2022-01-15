@@ -29,7 +29,7 @@ end
 
 get "/lists/:number" do 
   @ind = params[:number].to_i
-
+  redirect "/lists" if to_big?(@lists, @ind)
   erb :list_of_todos
 end
 
@@ -115,10 +115,35 @@ post "/delete/:number/:ind" do
   redirect "lists/:number"
 end
 
+
+
 post "/check/:number/:ind" do 
   ind = params[:ind].to_i
   num = params[:number].to_i
   @list = session[:lists][num]
-  @list[ind][:completed] = !@list[ind][:completed]
+  @list[:todos][ind][:completed] = !@list[:todos][ind][:completed]
+  session[:success] = "The todo has been updated"
   redirect "lists/:number"
 end
+
+post "/complete-all/:number" do 
+  num = params[:number].to_i
+  @list = session[:lists][num]
+  @list[:todos].each do |todo_hsh|
+    todo_hsh[:completed] = true
+  end
+
+  session[:success] = "All todos have been completed"
+  redirect "lists/:number"
+end
+
+helpers do 
+  def all_complete?(list)
+    list[:todos].all? { |todo| todo[:completed] }
+  end
+end
+
+def to_big?(list, n)
+  n > list.size   
+end
+
